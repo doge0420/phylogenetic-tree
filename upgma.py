@@ -3,8 +3,8 @@
 upgma.py
 
 Supports two modes:
-1) Sequence mode (default): hard‐coded DNA sequences → raw Hamming distances.
-2) Matrix mode: read a user‐provided distance matrix (CSV or TSV with headers).
+1) Sequence mode (default): hard-coded DNA sequences → raw Hamming distances.
+2) Matrix mode: read a user-provided distance matrix (CSV or TSV with headers).
 
 In both cases, runs UPGMA, prints distance matrices at each merge,
 prints merge history + Newick string, and saves a dendrogram (with branch lengths)
@@ -83,24 +83,31 @@ def read_distance_matrix(path):
 # Hard‐coded DNA sequences (example). Used if no --distances file provided.
 sequences = {
     # exo 1
-    "1" : "GTATAGGGGATATACTGAGAGCTATTTACA",
-    "2" : "GTATTGGCGATATTCCGAGACCTATTTACT",
-    "3" : "CTATTGGCCATATTCCGAGACCTATTTACT",
-    "4" : "GTATAGGCGATATACCGAGACCTAATTACT",
+    # "1" : "GTATAGGGGATATACTGAGAGCTATTTACA",
+    # "2" : "GTATTGGCGATATTCCGAGACCTATTTACT",
+    # "3" : "CTATTGGCCATATTCCGAGACCTATTTACT",
+    # "4" : "GTATAGGCGATATACCGAGACCTAATTACT",
 
     # exam 2020
-    # "1" : "ACAAACAGTTCGATCGATTTGCAGTCTGGG",
-    # "2" : "ACAAACAGTTTCTAGCGATTGCAGTCAGGG",
-    # "3" : "ACAGACAGTTCGATCGATTTGCAGTCTCGG",
-    # "4" : "ACTGACAGTTCGATCGATTTGCAGTCAGAG",
-    # "5" : "ATTGACAGTTCGATCGATTTGCAGTCAGGA",
-    # "6" : "TTTGACAGTTCGATCGATTTGCAGTCAGGG",
+    "1" : "ACAAACAGTTCGATCGATTTGCAGTCTGGG",
+    "2" : "ACAAACAGTTTCTAGCGATTGCAGTCAGGG",
+    "3" : "ACAGACAGTTCGATCGATTTGCAGTCTCGG",
+    "4" : "ACTGACAGTTCGATCGATTTGCAGTCAGAG",
+    "5" : "ATTGACAGTTCGATCGATTTGCAGTCAGGA",
+    "6" : "TTTGACAGTTCGATCGATTTGCAGTCAGGG",
 
     # slides
     # "1" : "CATAGACCTGACGCCAGCTC",
     # "2" : "CATAGACCCGCCATGAGCTC",
     # "3" : "CGTAGACTGGGCGCCAGCTC",
     # "4" : "CCTAGACGTCGCGGCAGTCC",
+
+    # exam 2022
+    # "1" : "CAGAGACTGGATTTACAGCATAAGTTTGCG",
+    # "2" : "CACAGACTGGATTAACAGCATAAGTTTGCG",
+    # "3" : "CACAGAGTGGATTAAGAGCTTTAGTTACCG",
+    # "4" : "CACAGAGTGCATTAACAGCATTAGTTAGCG",
+    # "5" : "CACAGACTGCATTAAGAGCTTAAGTTACCG",
 }
 
 def hamming_distance(seq1: str, seq2: str) -> int:
