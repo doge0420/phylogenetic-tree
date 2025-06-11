@@ -1,5 +1,5 @@
 # ─── Stage 1: Base image ─────────────────────────────────────
-FROM python:3.10-slim
+FROM python:alpine
 
 # ─── Stage 2: Set working directory ──────────────────────────
 WORKDIR /app
