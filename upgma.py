@@ -140,7 +140,7 @@ def print_matrix(distances, active_ids):
     """
     Print the current “active” distance matrix in tabular form.
     """
-    print("     " + "  ".join(f"{lab:>6}" for lab in active_ids))
+    print("     " + " ".join(f"{lab:>6}" for lab in active_ids))
     for i in active_ids:
         row = []
         for j in active_ids:
@@ -152,7 +152,7 @@ def print_matrix(distances, active_ids):
                 if d.is_integer():
                     row.append(f"{int(d):6d}")
                 else:
-                    row.append(f"{d:6.3f}")
+                    row.append(f"{d:6.2f}")
         print(f"{i:>4} " + " ".join(row))
 
 
