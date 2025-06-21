@@ -23,7 +23,7 @@ jobs:
       # 2. Prepare a clean 'output' folder and copy only index.html
       - name: Prepare Pages artifact
         run: |
-          mkdir output
+          mkdir -p output
           cp index.html output/index.html
 
       # 3. Upload the 'output' folder as the Pages artifact
