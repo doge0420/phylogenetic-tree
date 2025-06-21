@@ -374,7 +374,6 @@ if __name__ == "__main__":
     # Label leaves along the bottom (x-axis)
     ax.set_xticks([leaf_positions[l] for l in leaves])
     ax.set_xticklabels(leaves)
-    ax.invert_yaxis()
     plt.tight_layout()
 
     # Save figure to output/dendrogram.png
