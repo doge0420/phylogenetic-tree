@@ -7,23 +7,28 @@
   <style>
     body { font-family: Arial, sans-serif; padding: 2rem; line-height: 1.6; }
     h1 { font-size: 2rem; margin-bottom: 1rem; }
+    .controls { margin-bottom: 1rem; }
     table { border-collapse: collapse; margin-bottom: 1rem; }
     th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: center; }
     input[type="number"] { width: 4rem; }
     button { padding: 0.6rem 1rem; font-size: 1rem; cursor: pointer; margin-right: 0.5rem; }
     textarea { width: 100%; height: 200px; margin-top: 1rem; font-family: monospace; }
     .note { font-size: 0.9rem; color: #555; }
+    label { margin-right: 0.5rem; }
   </style>
 </head>
 <body>
   <h1>UPGMA Half-Matrix to Full CSV Converter</h1>
-  <p class="note">Fill in only the upper-triangle distances (i &lt; j). Diagonal entries are always zero.</p>
+  <div class="controls">
+    <label for="matrix-size">Matrix size:</label>
+    <input type="number" id="matrix-size" min="2" max="26" value="7" />
+    <button type="button" id="generate-btn">Generate Matrix</button>
+    <span class="note">Choose between 2 and 26 labels (A…Z).</span>
+  </div>
 
   <form id="distance-form" onsubmit="return false;">
     <table id="matrix-table">
-      <thead>
-        <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th></tr>
-      </thead>
+      <thead id="matrix-head"></thead>
       <tbody id="matrix-body"></tbody>
     </table>
     <button type="button" id="convert-btn">Convert to CSV</button>
@@ -34,50 +39,84 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const labels = ['A','B','C','D','E','F','G'];
-      const tbody = document.getElementById("matrix-body");
-
-      // Build input table
-      labels.forEach((rowLabel, i) => {
-        const row = document.createElement("tr");
-        const header = document.createElement("th");
-        header.textContent = rowLabel;
-        row.appendChild(header);
-
-        labels.forEach((colLabel, j) => {
-          const cell = document.createElement("td");
-          if (i < j) {
-            const input = document.createElement("input");
-            input.type = "number";
-            input.name = `d_${i}_${j}`;
-            input.min = "0";
-            input.required = true;
-            cell.appendChild(input);
-          } else if (i === j) {
-            cell.textContent = "0";
-          } else {
-            cell.textContent = "–";
-          }
-          row.appendChild(cell);
-        });
-        tbody.appendChild(row);
-      });
-
+      const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const sizeInput = document.getElementById("matrix-size");
+      const generateBtn = document.getElementById("generate-btn");
+      const headRow = document.getElementById("matrix-head");
+      const body = document.getElementById("matrix-body");
       const outputEl = document.getElementById("output");
       const convertBtn = document.getElementById("convert-btn");
       const clearBtn = document.getElementById("clear-btn");
 
-      // Conversion logic
+      function generateMatrix(n) {
+        // labels A, B, C...
+        const labels = alpha.slice(0, n).split("");
+        // Build header
+        headRow.innerHTML = "";
+        const trHead = document.createElement("tr");
+        trHead.appendChild(document.createElement("th"));
+        labels.forEach(lbl => {
+          const th = document.createElement("th");
+          th.textContent = lbl;
+          trHead.appendChild(th);
+        });
+        headRow.appendChild(trHead);
+
+        // Build body
+        body.innerHTML = "";
+        labels.forEach((rowLabel, i) => {
+          const row = document.createElement("tr");
+          const th = document.createElement("th");
+          th.textContent = rowLabel;
+          row.appendChild(th);
+
+          labels.forEach((colLabel, j) => {
+            const td = document.createElement("td");
+            if (i < j) {
+              const inp = document.createElement("input");
+              inp.type = "number";
+              inp.name = `d_${i}_${j}`;
+              inp.min = "0";
+              inp.required = true;
+              td.appendChild(inp);
+            } else if (i === j) {
+              td.textContent = "0";
+            } else {
+              td.textContent = "–";
+            }
+            row.appendChild(td);
+          });
+          body.appendChild(row);
+        });
+      }
+
+      // Initial render
+      generateMatrix(parseInt(sizeInput.value, 10));
+
+      // Regenerate on button click
+      generateBtn.addEventListener("click", () => {
+        const n = parseInt(sizeInput.value, 10);
+        if (n < 2 || n > alpha.length) {
+          alert(`Size must be between 2 and ${alpha.length}.`);
+          return;
+        }
+        outputEl.value = "";
+        generateMatrix(n);
+      });
+
+      // Convert to CSV
       convertBtn.addEventListener("click", () => {
-        const n = labels.length;
+        const n = parseInt(sizeInput.value, 10);
+        const labels = alpha.slice(0, n).split("");
         const mat = Array.from({ length: n }, () => Array(n).fill(0));
 
         for (let i = 0; i < n; i++) {
           for (let j = i + 1; j < n; j++) {
-            const correctInput = document.querySelector(`input[name="d_${i}_${j}"]`);
-            const val = parseFloat(correctInput.value);
+            const selector = `input[name="d_${i}_${j}"]`;
+            const inp = document.querySelector(selector);
+            const val = inp ? parseFloat(inp.value) : NaN;
             if (isNaN(val)) {
-              alert("Please fill all distances.");
+              alert("Please fill all distances before converting.");
               return;
             }
             mat[i][j] = val;
@@ -85,26 +124,25 @@
           }
         }
 
-        let csv = ',' + labels.join(',') + '\n';
+        let csv = "," + labels.join(",") + "\n";
         mat.forEach((rowArr, idx) => {
-          csv += labels[idx] + ',' + rowArr.join(',') + '\n';
+          csv += labels[idx] + "," + rowArr.join(",") + "\n";
         });
 
         outputEl.value = csv;
-        outputEl.scrollIntoView({ behavior: 'smooth' });
+        outputEl.scrollIntoView({ behavior: "smooth" });
       });
 
-      // Clear matrix logic
+      // Clear inputs and output
       clearBtn.addEventListener("click", () => {
-        // Clear all input fields
-        labels.forEach((_, i) => {
-          for (let j = i + 1; j < labels.length; j++) {
-            const input = document.querySelector(`input[name="d_${i}_${j}"]`);
-            if (input) input.value = '';
+        const n = parseInt(sizeInput.value, 10);
+        for (let i = 0; i < n; i++) {
+          for (let j = i + 1; j < n; j++) {
+            const inp = document.querySelector(`input[name="d_${i}_${j}"]`);
+            if (inp) inp.value = "";
           }
-        });
-        // Clear output
-        outputEl.value = '';
+        }
+        outputEl.value = "";
       });
     });
   </script>
